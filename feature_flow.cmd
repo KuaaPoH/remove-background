@@ -1,62 +1,67 @@
 @echo off
 setlocal EnableExtensions
 chcp 65001 >nul
-py -3 "%~dp0banner.py" || python "%~dp0banner.py"
+
+REM ---- Hiển thị banner nếu có
+if exist "%~dp0banner.py" (
+  py -3 "%~dp0banner.py" 2>nul || python "%~dp0banner.py" 2>nul
+)
+
 echo.
 echo ===========================================
-echo   		PUSH CODE GITHUB
+echo         DAY CODE LEN GITHUB (FLOW)
 echo ===========================================
 echo.
 
-REM --- 1) Kiểm tra git và repo ---
-git --version >nul 2>&1 || (echo ❌ Chua cai Git. && goto :END)
-git rev-parse --is-inside-work-tree >nul 2>&1 || (echo ❌ Khong phai thu muc Git repo. && goto :END)
+REM --- 1) Kiểm tra Git và thư mục repo ---
+git --version >nul 2>&1 || (echo ❌ Chưa cài Git. Cài tại: https://git-scm.com/downloads & goto :END)
+git rev-parse --is-inside-work-tree >nul 2>&1 || (echo ❌ Thư mục hiện tại không phải Git repo. & goto :END)
 
-REM --- 2) Lấy nhánh hiện tại ---
-for /f "tokens=*" %%i in ('git rev-parse --abbrev-ref HEAD') do set CURBR=%%i
+REM --- 2) Lấy tên nhánh hiện tại ---
+for /f "tokens=*" %%i in ('git rev-parse --abbrev-ref HEAD') do set "CURBR=%%i"
 
-REM --- 3) Nếu đang ở main/master thì bắt buộc tạo/đổi sang feature ---
-if /I "%CURBR%"=="main"  goto :NEED_FEATURE
+REM --- 3) Nếu đang ở main/master thì buộc tạo/chuyển sang nhánh tính năng ---
+if /I "%CURBR%"=="main"   goto :NEED_FEATURE
 if /I "%CURBR%"=="master" goto :NEED_FEATURE
 goto :HAVE_FEATURE
 
 :NEED_FEATURE
-echo ⚠️  Dang o nhanh "%CURBR%". Khong duoc push truc tiep vao main/master.
-set /p NEWBR=👉 Nhap ten nhanh tinh nang (vi du: feature-login): 
-if "%NEWBR%"=="" (echo ❌ Chua nhap ten nhanh. & goto :END)
+echo ⚠️  Bạn đang ở nhánh "%CURBR%". Không được push trực tiếp vào main/master.
+set /p NEWBR=👉 Nhập tên nhánh tính năng (ví dụ: feature-login): 
+if "%NEWBR%"=="" (echo ❌ Chưa nhập tên nhánh. & goto :END)
 
-REM neu nhanh da ton tai => checkout, khong thi tao moi
+REM --- Nếu nhánh đã tồn tại thì checkout, ngược lại tạo mới ---
 git show-ref --verify --quiet refs/heads/%NEWBR%
 if %ERRORLEVEL%==0 (
-  echo 🔀 Chuyen sang nhanh da co: %NEWBR%
+  echo 🔀 Chuyển sang nhánh có sẵn: %NEWBR%
   git checkout %NEWBR%
 ) else (
-  echo 🌱 Tao nhanh moi: %NEWBR%
+  echo 🌱 Tạo nhánh mới: %NEWBR%
   git checkout -b %NEWBR%
 )
-set CURBR=%NEWBR%
+set "CURBR=%NEWBR%"
 
 :HAVE_FEATURE
 echo.
-echo ✅ Dang lam viec tren nhanh: %CURBR%
+echo ✅ Đang làm việc trên nhánh: %CURBR%
 echo.
 
-REM --- 4) Nhap message commit ---
-set /p MSG=📝 Nhap noi dung commit: 
-if "%MSG%"=="" set MSG=update
+REM --- 4) Nhập nội dung commit ---
+set /p MSG=📝 Nhập nội dung commit: 
+if "%MSG%"=="" set "MSG=Cập nhật mã nguồn"
 
-REM --- 5) Add + Commit (bo qua commit neu khong co thay doi) ---
-echo 🔄 git add .
+REM --- 5) Thêm & Commit (nếu không có gì để commit thì bỏ qua thông báo) ---
+echo 🔄 Đang chạy: git add .
 git add .
 
-echo 🧷 git commit -m "%MSG%"
+echo 🧷 Đang chạy: git commit -m "%MSG%"
 git commit -m "%MSG%"
 if %ERRORLEVEL% NEQ 0 (
-  echo (Thong bao tren co the chi ra la khong co gi de commit. Tiep tuc push upstream neu can.)
+  echo Thông báo: Có thể không có thay đổi nào để commit. Tiếp tục thử push nếu cần.
 )
 
-REM --- 6) Push len origin, tu dong -u neu lan dau ---
-echo 📤 Dang push len origin/%CURBR% ...
+REM --- 6) Push lên origin, tự thêm upstream (-u) nếu lần đầu ---
+echo 📤 Đang push lên origin/%CURBR% ...
 git rev-parse --abbrev-ref --symbolic-full-name @{u} >nul 2>&1
 if %ERRORLEVEL%==0 (
   git push
@@ -65,34 +70,31 @@ if %ERRORLEVEL%==0 (
 )
 
 if %ERRORLEVEL% NEQ 0 (
-  echo ❌ Push that bai. Kiem tra mang/quyen truy cap.
+  echo ❌ Push thất bại. Kiểm tra mạng/quyền truy cập hoặc xung đột.
   goto :END
 )
 
-echo ✅ Push thanh cong len origin/%CURBR%.
+echo ✅ Push thành công lên origin/%CURBR%.
 echo.
 
-REM --- 7) Goi link tao Pull Request tren GitHub (neu xac dinh duoc URL) ---
-for /f "tokens=*" %%i in ('git remote get-url origin') do set GITURL=%%i
+REM --- 7) Mở trang tạo Pull Request trên GitHub (nếu xác định được URL) ---
+for /f "tokens=*" %%i in ('git remote get-url origin') do set "GITURL=%%i"
 
-REM Chuyen SSH -> HTTPS; cat .git; tao URL compare
-set REPOURL=%GITURL%
-REM truong hop ssh: git@github.com:user/repo.git
+REM --- Chuyển SSH -> HTTPS nếu cần; bỏ đuôi .git ---
+set "REPOURL=%GITURL%"
 echo %REPOURL% | find "git@github.com:" >nul
 if %ERRORLEVEL%==0 (
-  set REPOURL=https://github.com/%REPOURL:git@github.com:=%
+  set "REPOURL=https://github.com/%REPOURL:git@github.com:=%"
 )
+if /I "%REPOURL:~-4%"==".git" set "REPOURL=%REPOURL:~0,-4%"
 
-REM bo duoi .git neu co
-if /I "%REPOURL:~-4%"==".git" set REPOURL=%REPOURL:~0,-4%
+REM --- Xác định nhánh chính trên remote: ưu tiên main, rơi về master ---
+set "BASE=main"
+git ls-remote --heads origin main >nul 2>&1 || set "BASE=master"
 
-REM Xac dinh nhanh chinh (main/master) tu remote
-set BASE=main
-git ls-remote --heads origin main >nul 2>&1 || set BASE=master
+set "PRURL=%REPOURL%/compare/%BASE%...%CURBR%?expand=1"
 
-set PRURL=%REPOURL%/compare/%BASE%...%CURBR%?expand=1
-
-echo 🔗 Mo trang tao Pull Request:
+echo 🔗 Mở trang tạo Pull Request:
 echo %PRURL%
 start "" "%PRURL%"
 
