@@ -1,9 +1,10 @@
 @echo off
 setlocal EnableExtensions
 chcp 65001 >nul
-
+py -3 "%~dp0banner.py" || python "%~dp0banner.py"
+echo.
 echo ===========================================
-echo   FEATURE FLOW: BRANCH -> COMMIT -> PUSH
+echo   		PUSH CODE GITHUB
 echo ===========================================
 echo.
 
