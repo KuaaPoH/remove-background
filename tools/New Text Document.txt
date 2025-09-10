@@ -1,0 +1,40 @@
+@echo off
+setlocal EnableExtensions
+
+:: 1) Kiểm tra Git + repo
+call "%~dp0helpers.cmd" ensure_git_ready || goto :end
+
+:: 2) Lấy nhánh hiện tại
+call "%~dp0helpers.cmd" get_branch
+
+:: 3) Đồng bộ thông tin remote (không merge)
+git fetch origin >nul 2>&1
+
+:: 4) Xác định remote branch
+call "%~dp0helpers.cmd" get_remote_branch
+
+if not defined REMOTE_BRANCH (
+  echo [ERR] Khong tim thay origin/%BRANCH% hay origin/%DEFAULT_BASE%/master.
+  goto :end
+)
+
+:: 5) Lấy commit local & remote
+for /f "delims=" %%a in ('git rev-parse HEAD') do set "LOCAL=%%a"
+for /f "delims=" %%a in ('git rev-parse %REMOTE_BRANCH%') do set "REMOTE=%%a"
+
+echo Nhanh: %BRANCH%
+echo Local : %LOCAL%
+echo Remote: %REMOTE%  (%REMOTE_BRANCH%)
+echo(
+
+:: 6) Đối chiếu
+if "%LOCAL%"=="%REMOTE%" (
+  echo [OK] Ban dang o PHIEN BAN MOI NHAT.
+) else (
+  echo [WARN] Dang o phien ban CU. Nen chay: git pull --rebase origin %BRANCH%
+)
+
+:end
+echo.
+pause
+endlocal
