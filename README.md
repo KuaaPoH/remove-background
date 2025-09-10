@@ -6,16 +6,10 @@
   <!-- Version: sửa số sau khi cập nhật VERSION trong banner.py -->
   <img alt="version" src="https://img.shields.io/badge/version-0.0.1-blue">
 
-  <!-- License -->
-  <a href="LICENSE">
-    <img alt="license" src="https://img.shields.io/github/license/KuaaPoH/remove-background">
-  </a>
 
-  <!-- Support (đổi link nếu có Discord; không có thì trỏ Issues) -->
-  <a href="https://discord.gg/6Nk3MVWhwk">
-    <img alt="support" src="https://img.shields.io/badge/Support-Issues-grey">
-  </a>
 
+ 
+<a href="https://discord.gg/6Nk3MVWhwk"><img src="https://img.shields.io/badge/Support-gray?style=flat&logo=Discord&logoColor=white&logoSize=auto&labelColor=5562ea"></a>
   <!-- Ngôn ngữ (ví dụ) -->
   <img alt="vi" src="https://img.shields.io/badge/d%E1%BB%8Bch-Vietnamese-brightgreen">
 
