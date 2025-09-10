@@ -5,11 +5,12 @@
 <p align="center">
   <!-- Version: sửa số sau khi cập nhật VERSION trong banner.py -->
   <img alt="version" src="https://img.shields.io/badge/version-0.0.1-blue">
-
+<a href="https://discord.gg/6Nk3MVWhwk">
+    <img alt="support" src="https://img.shields.io/badge/Support-gray?style=flat&logo=Discord&logoColor=white&logoSize=auto&labelColor=5562ea">
+  </a>
 
 
  
-<a href="https://discord.gg/6Nk3MVWhwk"><img src="https://img.shields.io/badge/Support-gray?style=flat&logo=Discord&logoColor=white&logoSize=auto&labelColor=5562ea"></a>
   <!-- Ngôn ngữ (ví dụ) -->
   <img alt="vi" src="https://img.shields.io/badge/d%E1%BB%8Bch-Vietnamese-brightgreen">
 
