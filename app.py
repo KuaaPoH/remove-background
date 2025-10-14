@@ -5,6 +5,9 @@ from werkzeug.serving import is_running_from_reloader
 
 app = Flask(__name__)
 
+from api import api_bp
+app.register_blueprint(api_bp)
+
 @app.route("/")
 def home():
     return render_template("index.html")

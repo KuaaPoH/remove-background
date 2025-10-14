@@ -165,100 +165,207 @@
   window.addEventListener('load', navmenuScrollspy);
   document.addEventListener('scroll', navmenuScrollspy);
 
-  /* ==========================================================
-   * ===== HERO DROPZONE (PhotoRoom-like) =====================
-   * - Hỗ trợ click chọn ảnh, kéo-thả
-   * - Hiển thị ảnh preview ngay trong khung caro
-   * - Không phụ thuộc backend
-   * ========================================================== */
-  function initHeroDropzone() {
-    const dz = document.querySelector('.pr-dropzone');
-    if (!dz) return;
 
-    const inner = dz.querySelector('.pr-drop-inner');
-    const btn = dz.querySelector('.pr-cta');
-    let fileInput = document.getElementById('fileInput');
+/* ==========================================================
+ * ===== HERO DROPZONE + BACKEND CALL (POPUP + LOADING) =====
+ * - Bấm "Bắt đầu từ một ảnh" => mở chọn file thiết bị
+ * - Chọn/kéo-thả ảnh => gửi /remove-bg
+ * - Trong lúc chờ: mở modal + spinner
+ * - Xong: hiện 2 ảnh + nút Tải
+ * ========================================================== */
+function initHeroDropzone() {
+  const dz        = document.querySelector('.pr-dropzone');
+  if (!dz) return;
 
-    // nếu thiếu input ẩn, tạo luôn
-    if (!fileInput) {
-      fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.hidden = true;
-      fileInput.id = 'fileInput';
-      dz.appendChild(fileInput);
+  const inner     = dz.querySelector('.pr-drop-inner');
+  const btn       = dz.querySelector('.pr-cta');
+  let   fileInput = document.getElementById('fileInput');
+
+  // === Modal so sánh (đã thêm trong index.html) ===
+  const compareModalEl = document.getElementById('compareModal');
+  const modalOrig      = document.getElementById('modalOrig');
+  const modalRes       = document.getElementById('modalRes');
+  const modalDownload  = document.getElementById('modalDownload');
+  // holder để cắm spinner (nếu bạn bọc bằng div#origHolder/#resHolder thì giữ id đó;
+  // nếu không có, spinner vẫn cắm vào cha của ảnh)
+  const origHolder     = document.getElementById('origHolder') || modalOrig?.parentElement;
+  const resHolder      = document.getElementById('resHolder')  || modalRes?.parentElement;
+
+  let compareModal; // khởi tạo khi cần
+  let spinner;      // spinner Bootstrap
+
+  // Config engine
+  const { ENGINE } = window.APP_CONFIG || { ENGINE: "rembg" };
+
+  // ===== Helpers =====
+  function showMainPreview(src) {
+    inner.innerHTML = "";
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'preview';
+    img.style.maxWidth   = '100%';
+    img.style.maxHeight  = '360px';
+    img.style.borderRadius = '12px';
+    img.style.boxShadow  = '0 8px 24px rgba(17,24,39,.14)';
+    inner.appendChild(img);
+
+    const actions = document.createElement('div');
+    actions.className = 'mt-3';
+    actions.innerHTML = `<button class="btn btn-sm btn-secondary" id="pr-change">Chọn ảnh khác</button>`;
+    inner.appendChild(actions);
+    inner.querySelector('#pr-change')?.addEventListener('click', () => fileInput.click());
+
+    dz.style.height = 'auto';
+    dz.style.minHeight = '300px';
+  }
+
+  // Tạo spinner (Bootstrap) gắn vào holder
+  function attachSpinner(holder) {
+    if (!holder) return;
+    // xóa spinner cũ nếu có
+    holder.querySelector('.rb-spinner-wrap')?.remove();
+    const wrap = document.createElement('div');
+    wrap.className = 'rb-spinner-wrap d-flex justify-content-center align-items-center';
+    wrap.style.minHeight = '220px';
+    wrap.innerHTML = `
+      <div class="spinner-border" role="status" style="width:3rem;height:3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    `;
+    holder.appendChild(wrap);
+    return wrap;
+  }
+  function detachSpinner(holder) {
+    holder?.querySelector('.rb-spinner-wrap')?.remove();
+  }
+
+  // Bật modal + loading
+  function startLoading(origURL) {
+    // gán ảnh gốc vào modal (nếu có)
+    if (origURL) modalOrig.src = origURL;
+
+    // modal
+    if (!compareModal) {
+      compareModal = new bootstrap.Modal(compareModalEl, { backdrop: 'static' });
     }
+    compareModal.show();
 
-    // click nút tím / click vùng dropzone -> mở chọn file
-    btn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      fileInput.click();
-    });
-    dz.addEventListener('click', (e) => {
-      // chỉ khi click vào nền trống mới mở file (tránh click vào link)
-      if (e.target === dz || e.target === inner) fileInput.click();
-    });
+    // spinner ở cột kết quả
+    spinner = attachSpinner(resHolder);
 
-    // xử lý file đã chọn
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files && fileInput.files[0]) {
-        previewImage(fileInput.files[0]);
-      }
-    });
+    // tạm thời clear ảnh kết quả + vô hiệu nút tải
+    modalRes.removeAttribute('src');
+    modalDownload.removeAttribute('href');
+  }
 
-    // drag & drop highlight
-    ['dragenter','dragover'].forEach(ev =>
-      dz.addEventListener(ev, e => {
-        e.preventDefault();
-        dz.classList.add('dragging');
-      })
-    );
-    ['dragleave','drop'].forEach(ev =>
-      dz.addEventListener(ev, e => {
-        e.preventDefault();
-        dz.classList.remove('dragging');
-      })
-    );
-
-    dz.addEventListener('drop', (e) => {
-      const files = e.dataTransfer?.files;
-      if (files && files[0]) {
-        previewImage(files[0]);
-      }
-    });
-
-    // tạo/hiển thị preview
-    function previewImage(file) {
-      if (!file.type.startsWith('image/')) return;
-
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        // xoá nội dung cũ (nút + hint) và render preview
-        inner.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = ev.target.result;
-        img.alt = 'preview';
-        img.style.maxWidth = '100%';
-        img.style.maxHeight = '360px';
-        img.style.borderRadius = '12px';
-        img.style.boxShadow = '0 8px 24px rgba(17,24,39,.14)';
-        inner.appendChild(img);
-
-        // thêm dải nút phụ (chọn lại)
-        const actions = document.createElement('div');
-        actions.className = 'mt-3';
-        actions.innerHTML = `
-          <button class="btn btn-sm btn-secondary" id="pr-change">Chọn ảnh khác</button>
-        `;
-        inner.appendChild(actions);
-
-        inner.querySelector('#pr-change')?.addEventListener('click', () => fileInput.click());
-      };
-      reader.readAsDataURL(file);
+  // Tắt loading + hiển thị ảnh kết quả
+  function stopLoading(resultURL) {
+    detachSpinner(resHolder);
+    if (resultURL) {
+      modalRes.src = resultURL;
+      modalDownload.href = resultURL;
     }
   }
 
-  // Khởi tạo sau khi DOM sẵn sàng
-  window.addEventListener('load', initHeroDropzone);
+  async function processImageFile(file) {
+    const fd = new FormData();
+    fd.append("image", file);
+    const res = await fetch(`/remove-bg?engine=${encodeURIComponent(ENGINE)}`, {
+      method: "POST",
+      body: fd
+    });
+    if (!res.ok) throw new Error(await res.text() || "Xử lý thất bại");
+    const blob = await res.blob();
+    return URL.createObjectURL(blob); // resultURL
+  }
 
-})();
+  // ===== Nút "Bắt đầu từ một ảnh" => mở hộp chọn file =====
+  btn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    fileInput?.click();
+  });
+
+  // ===== Input ẩn =====
+  if (!fileInput) {
+    fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.hidden = true;
+    fileInput.id = 'fileInput';
+    dz.appendChild(fileInput);
+  }
+
+  // Click vùng trống dropzone => mở chọn file
+  dz.addEventListener('click', (e) => {
+    if (e.target === dz || e.target === inner) fileInput.click();
+  });
+
+  // Chọn file từ thiết bị
+  fileInput.addEventListener('change', async () => {
+    const f = fileInput.files && fileInput.files[0];
+    if (!f || !f.type.startsWith('image/')) return;
+
+    const origURL = URL.createObjectURL(f);
+    showMainPreview(origURL);
+
+    try {
+      startLoading(origURL);                         // mở modal + spinner
+      const resultURL = await processImageFile(f);  // gọi backend
+      stopLoading(resultURL);                       // hiển thị kết quả
+    } catch (err) {
+      stopLoading();                                // đảm bảo tắt spinner
+      console.error(err);
+      alert("Xử lý thất bại: " + err.message);
+    }
+  });
+
+  // Drag & drop
+  ['dragenter','dragover'].forEach(ev =>
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragging'); })
+  );
+  ['dragleave','drop'].forEach(ev =>
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragging'); })
+  );
+  dz.addEventListener('drop', async (e) => {
+    const f = e.dataTransfer?.files?.[0];
+    if (!f || !f.type.startsWith('image/')) return;
+
+    const origURL = URL.createObjectURL(f);
+    showMainPreview(origURL);
+
+    try {
+      startLoading(origURL);
+      const resultURL = await processImageFile(f);
+      stopLoading(resultURL);
+    } catch (err) {
+      stopLoading();
+      console.error(err);
+      alert("Xử lý thất bại: " + err.message);
+    }
+  });
+
+  // Ảnh ví dụ trong HTML
+  window.showExampleImage = async function (src) {
+    try {
+      const resp = await fetch(src);
+      const blob = await resp.blob();
+      const file = new File([blob], "example.jpg", { type: blob.type || "image/jpeg" });
+
+      const origURL = URL.createObjectURL(file);
+      showMainPreview(origURL);
+
+      startLoading(origURL);
+      const resultURL = await processImageFile(file);
+      stopLoading(resultURL);
+    } catch (err) {
+      stopLoading();
+      console.error(err);
+      alert("Không xử lý được ảnh ví dụ: " + err.message);
+    }
+  };
+}
+
+// Khởi tạo sau khi DOM sẵn sàng
+window.addEventListener('load', initHeroDropzone);
+})(); // đóng IIFE
+

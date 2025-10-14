@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "Flask Run + Auto Open Browser",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "program": "app.py",
       "console": "integratedTerminal",

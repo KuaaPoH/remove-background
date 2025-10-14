@@ -100,20 +100,23 @@
             </div>
 
             <img id="mainPreview" src="" alt="Preview" class="img-fluid rounded mt-3" style="display:none; max-width:100%; height:auto;">
-          </div>
-        </div>
-
-        <!-- Thumbnails -->
-        <div class="text-center mt-4">
-          <div id="thumbnailContainer" class="d-flex justify-content-center flex-wrap gap-3">
-            <div class="thumb-add d-flex align-items-center justify-content-center border rounded-3"
-                 style="width:70px; height:70px; cursor:pointer; background:#f8f9fa;"
-                 onclick="document.getElementById('fileInput').click()">
-              <i class="bi bi-plus-lg fs-3 text-secondary"></i>
+           
+            <div id="compareArea" class="row g-3 mt-4" style="display:none; max-width:900px; margin:0 auto;">
+              <div class="col-md-6">
+                <h6 class="mb-2">Ảnh gốc</h6>
+                <img id="origImg" class="img-fluid rounded shadow-sm" alt="Original">
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h6 class="m-0">Ảnh đã tách nền</h6>
+                  <a id="downloadBtn" class="btn btn-sm btn-success" download="removed.png" style="display:none;">Tải ảnh</a>
+                </div>
+                <img id="resImg" class="img-fluid rounded shadow-sm" alt="Result">
+              </div>
             </div>
+
           </div>
         </div>
-
         <!-- Ảnh ví dụ -->
         <div class="text-center mt-4">
           <p class="mb-2 fw-medium">
@@ -236,150 +239,49 @@
 <script src="{{ url_for('static', filename='assets/vendor/aos/aos.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
 
+  <script>
+  window.APP_CONFIG = {
+    ENGINE: "rembg"  // hoặc "grabcut"
+  };
+  </script>
 
   <!-- Main JS -->
-<script>
-  
-const fileInput = document.getElementById("fileInput");
-const dropzone = document.querySelector(".pr-dropzone");
-const dropContent = document.getElementById("dropContent");
-const mainPreview = document.getElementById("mainPreview");
-const thumbnailSection = document.querySelector(".text-center.mt-4 > #thumbnailContainer").parentElement;
-const thumbnailContainer = document.getElementById("thumbnailContainer");
-const btnUpload = document.getElementById("btnUpload");
+     <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+     <!-- Compare Modal -->
+<div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title">So sánh ảnh</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
 
-let uploadedImages = [];
+      <div class="modal-body">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h6 class="mb-2">Ảnh gốc</h6>
+            <div class="p-2 rounded-3 shadow-sm bg-white" id="origHolder">
+              <img id="modalOrig" class="modal-img no-bg" alt="Original">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h6 class="m-0">Ảnh đã tách nền</h6>
+              <a id="modalDownload" class="btn btn-success btn-sm" download="removed.png">Tải ảnh</a>
+            </div>
+            <div class="p-2 rounded-3 shadow-sm bg-white" id="resHolder">
+              <img id="modalRes" class="modal-img no-bg" alt="Result">
+            </div>
+          </div>
+        </div>
+      </div>
 
-// Ẩn thumbnail ban đầu
-thumbnailSection.style.display = "none";
-
-// --- Nút chọn file ---
-btnUpload.addEventListener("click", () => fileInput.click());
-fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
-
-// --- Kéo thả ảnh ---
-dropzone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropzone.style.borderColor = "#0d6efd";
-});
-dropzone.addEventListener("dragleave", () => {
-  dropzone.style.borderColor = "#d0d7de";
-});
-dropzone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropzone.style.borderColor = "#d0d7de";
-  handleFiles(e.dataTransfer.files);
-});
-
-// --- Xử lý file ảnh ---
-function handleFiles(files) {
-  for (const file of files) {
-    if (!file.type.startsWith("image/")) continue;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const src = event.target.result;
-      uploadedImages.push(src);
-      updateThumbnails();
-      showImage(src);
-      toggleThumbnailSection();
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-// --- Hiển thị ảnh chính ---
-function showImage(src) {
-  mainPreview.src = src;
-  mainPreview.style.display = "block";
-  mainPreview.style.maxWidth = "100%";
-  mainPreview.style.height = "auto";
-  mainPreview.style.maxHeight = "70vh"; // ✅ Giới hạn chiều cao hợp lý
-  dropContent.style.display = "none";
-
-  // ✅ Cho phép dropzone tự co giãn
-  dropzone.style.height = "auto";
-  dropzone.style.minHeight = "300px";
-  dropzone.classList.add("has-image");
-}
-
-// --- Cập nhật danh sách thumbnail ---
-function updateThumbnails() {
-  thumbnailContainer.innerHTML = `
-    <div class="thumb-add d-flex align-items-center justify-content-center border rounded-3"
-         style="width:70px;height:70px;cursor:pointer;background:#f8f9fa;"
-         onclick="document.getElementById('fileInput').click()">
-      <i class="bi bi-plus-lg fs-3 text-secondary"></i>
-    </div>`;
-
-  uploadedImages.forEach((src, index) => {
-    const div = document.createElement("div");
-    div.className = "position-relative";
-    div.style.width = "70px";
-    div.style.height = "70px";
-
-    const img = document.createElement("img");
-    img.src = src;
-    img.className = "rounded-3";
-    img.style.width = "70px";
-    img.style.height = "70px";
-    img.style.objectFit = "cover";
-    img.style.cursor = "pointer";
-    img.onclick = () => showImage(src);
-
-    const delBtn = document.createElement("button");
-    delBtn.className = "btn btn-sm btn-light position-absolute top-0 end-0 m-1";
-    delBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
-    delBtn.style.borderRadius = "50%";
-
-    delBtn.onclick = (e) => {
-      e.stopPropagation();
-      uploadedImages.splice(index, 1);
-      updateThumbnails();
-      toggleThumbnailSection();
-
-      if (uploadedImages.length === 0) {
-        resetToInitial();
-      } else if (mainPreview.src === src) {
-        showImage(uploadedImages[0]);
-      }
-    };
-
-    div.appendChild(img);
-    div.appendChild(delBtn);
-    thumbnailContainer.appendChild(div);
-  });
-}
-
-// --- Ẩn/hiện khu vực thumbnail ---
-function toggleThumbnailSection() {
-  thumbnailSection.style.display = uploadedImages.length > 0 ? "block" : "none";
-}
-
-// --- Reset về trạng thái ban đầu ---
-function resetToInitial() {
-  mainPreview.src = "";
-  mainPreview.style.display = "none";
-  dropContent.style.display = "block";
-  fileInput.value = ""; // reset input file
-  dropzone.classList.remove("has-image");
-  dropzone.style.height = "auto";
-  thumbnailContainer.innerHTML = `
-    <div class="thumb-add d-flex align-items-center justify-content-center border rounded-3"
-         style="width:70px;height:70px;cursor:pointer;background:#f8f9fa;"
-         onclick="document.getElementById('fileInput').click()">
-      <i class="bi bi-plus-lg fs-3 text-secondary"></i>
-    </div>`;
-}
-
-// --- Ảnh ví dụ ---
-function showExampleImage(src) {
-  showImage(src);
-  uploadedImages = [src, ...uploadedImages];
-  updateThumbnails();
-  toggleThumbnailSection();
-}
-</script>
-
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
