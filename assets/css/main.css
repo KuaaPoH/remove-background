@@ -3490,7 +3490,27 @@ section,
   min-height:180px;
   display:flex; align-items:center; justify-content:center; flex-direction:column;
 }
+.preview-container img {
+  background-color: #fff; /* nền trắng */
+  mix-blend-mode: normal; /* bỏ hòa trộn trong suốt */
+  opacity: 1; /* đảm bảo không bị mờ */
+  filter: none; /* loại bỏ hiệu ứng filter */
+}
+.image-preview {
+  background-color: #fff !important; /* bắt buộc nền trắng */
+  background-image: none !important; /* loại bỏ lớp nền checkered */
+}
 
+.preview-container img {
+  background-color: #fff; /* nền trắng */
+  mix-blend-mode: normal; /* bỏ hòa trộn trong suốt */
+  opacity: 1; /* đảm bảo không bị mờ */
+  filter: none; /* loại bỏ hiệu ứng filter */
+}
+.image-preview {
+  background-color: #fff !important; /* bắt buộc nền trắng */
+  background-image: none !important; /* loại bỏ lớp nền checkered */
+}
 /* Nút tím */
 .pr-cta{
   --pr-purple: #5b21ff;
@@ -3599,7 +3619,35 @@ section,
   border-radius: 12px;
   box-shadow: 0 14px 36px rgba(17,24,39,.16), 0 3px 8px rgba(17,24,39,.08);
 }
+/* Khi có ảnh, ẩn nền caro checkerboard */
+.pr-dropzone.has-image::before {
+  display: none !important;
+}
+/* Đảm bảo ảnh luôn nằm trên nền trắng, không bị hòa trộn */
+.pr-drop-inner img {
+  background-color: #fff;
+  mix-blend-mode: normal;
+  z-index: 2;
+  position: relative;
+}
+.pr-dropzone {
+  transition: all 0.3s ease;
+  min-height: 300px;
+  overflow: hidden;
+  position: relative;
+}
 
+.pr-dropzone.has-image {
+  background: #fff;
+}
+
+#mainPreview {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  max-height: 70vh;
+  object-fit: contain;
+}
 /* khi kéo–thả: viền dashed + bóng tím nhẹ */
 .pr-dropzone.dragging{
   outline: 2px dashed #6a35ff;
@@ -3608,7 +3656,36 @@ section,
     0 40px 110px rgba(90,33,255,.18),
     0 14px 28px rgba(90,33,255,.10);
 }
+/* Khi có ảnh, ẩn nền caro checkerboard */
+.pr-dropzone.has-image::before {
+  display: none !important;
+}
 
+/* Đảm bảo ảnh luôn nằm trên nền trắng, không bị hòa trộn */
+.pr-drop-inner img {
+  background-color: #fff;
+  mix-blend-mode: normal;
+  z-index: 2;
+  position: relative;
+}
+.pr-dropzone {
+  transition: all 0.3s ease;
+  min-height: 300px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pr-dropzone.has-image {
+  background: #fff;
+}
+
+#mainPreview {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  max-height: 70vh;
+  object-fit: contain;
+}
 /* Mobile: giữ tỉ lệ đẹp */
 @media (max-width: 768px){
   .pr-dropzone{
@@ -3616,3 +3693,151 @@ section,
     height: 180px; /* thấp hơn trên mobile */
   }
 }
+footer {
+            background-color: #4827dc;
+            color: #fff;
+            padding: 60px 0 20px;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 30px;
+            padding-right: 20px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-column ul li a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 14px;
+        }
+        
+        .footer-column ul li a:hover {
+            color: #fff;
+        }
+        
+        .footer-column p {
+            color: #b0b0b0;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .app-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .app-badge {
+            display: inline-block;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 8px 12px;
+            transition: background-color 0.3s;
+        }
+        
+        .app-badge:hover {
+            background-color: #444;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .social-icon {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            background-color: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .social-icon:hover {
+            background-color: #444;
+            transform: translateY(-2px);
+        }
+        
+        .social-icon.discord:hover {
+            background-color: #5865F2;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-bottom-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-bottom-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        
+        .footer-bottom-links a:hover {
+            color: #fff;
+        }
+        
+        .copyright {
+            color: #b0b0b0;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-column {
+                flex: 100%;
+                padding-right: 0;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .footer-bottom-links {
+                order: 2;
+            }
+            
+            .copyright {
+                order: 1;
+            }
+        }
