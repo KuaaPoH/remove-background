@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Landio Bootstrap Template</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <title>Trình xóa nền - Landio Template</title>
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -15,29 +12,22 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
+  <!-- Vendor CSS -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-  <!-- Main CSS File -->
+  <!-- Main CSS -->
   <link href="assets/css/main.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: Landio
-  * Template URL: https://bootstrapmade.com/landio-bootstrap-landing-page-template/
-  * Updated: Sep 06 2025 with Bootstrap v5.3.8
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 </head>
 
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center fixed-top">
+  <!-- Header -->
+<header id="header" class="header d-flex align-items-center fixed-top">
     <div class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
       <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
@@ -80,38 +70,72 @@
     </div>
   </header>
 
-  <main class="main">
-<section id="hero" class="hero section hero-pr-style">
-  <div class="container">
-    <!-- tiêu đề + mô tả giữ nguyên -->
-    <div class="text-center mb-4">
-      <h1 class="hero-title">Trình xóa nền</h1>
-      <p class="hero-description">Xóa hình nền miễn phí …</p>
-    </div>
+  <!-- Main -->
+  <main class="main mt-5 pt-5">
+    <section id="hero" class="hero section hero-pr-style">
+      <div class="container">
 
-    <!-- khối dropzone -->
-    <div class="position-relative">
-      <img src="assets/img/about/about-3.webp" class="pr-decor-left d-none d-md-block" alt="">
-      <img src="assets/img/about/about-7.webp" class="pr-decor-right d-none d-md-block" alt="">
-      <div class="pr-dropzone mx-auto">
-        <div class="pr-drop-inner text-center">
-          <a href="#upload" class="btn btn-primary pr-cta">
-            <i class="bi bi-plus-lg me-2"></i>Bắt đầu từ một ảnh
-          </a>
-          <div class="pr-drop-hint mt-3">Hoặc thả hình ảnh tại đây</div>
-          <input id="fileInput" type="file" accept="image/*" hidden>
+        <!-- Tiêu đề -->
+        <div class="text-center mb-4">
+          <h1 class="hero-title">Trình xóa nền</h1>
+          <p class="hero-description text-muted">Xóa hình nền miễn phí, nhanh chóng và dễ sử dụng.</p>
         </div>
+
+        <!-- Dropzone -->
+        <div class="position-relative">
+          <img src="assets/img/about/about-3.webp" class="pr-decor-left d-none d-md-block" alt="">
+          <img src="assets/img/about/about-7.webp" class="pr-decor-right d-none d-md-block" alt="">
+          <div class="pr-dropzone mx-auto border rounded-4 p-5 text-center" style="background:rgba(255,255,255,0.8); max-width:600px;">
+            
+            <div class="pr-drop-inner text-center" id="dropContent">
+              <button class="btn btn-primary pr-cta" id="btnUpload">
+                <i class="bi bi-plus-lg me-2"></i>Bắt đầu từ một ảnh
+              </button>
+              <div class="pr-drop-hint mt-3">Hoặc thả hình ảnh tại đây</div>
+              <input id="fileInput" type="file" accept="image/*" hidden>
+            </div>
+
+            <img id="mainPreview" src="" alt="Preview" class="img-fluid rounded mt-3" style="display:none; max-width:100%; height:auto;">
+          </div>
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="text-center mt-4">
+          <div id="thumbnailContainer" class="d-flex justify-content-center flex-wrap gap-3">
+            <div class="thumb-add d-flex align-items-center justify-content-center border rounded-3"
+                 style="width:70px; height:70px; cursor:pointer; background:#f8f9fa;"
+                 onclick="document.getElementById('fileInput').click()">
+              <i class="bi bi-plus-lg fs-3 text-secondary"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ảnh ví dụ -->
+        <div class="text-center mt-4">
+          <p class="mb-2 fw-medium">
+            Bạn chưa có hình ảnh? <span class="text-muted">Hãy thử một hình dưới đây</span>
+          </p>
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <img src="assets/img/examples/example-1.jpg" alt="Ảnh ví dụ 1" class="example-img rounded shadow-sm"
+                 width="80" height="80" style="object-fit:cover;cursor:pointer;"
+                 onclick="showExampleImage(this.src)">
+            <img src="assets/img/examples/example-2.jpg" alt="Ảnh ví dụ 2" class="example-img rounded shadow-sm"
+                 width="80" height="80" style="object-fit:cover;cursor:pointer;"
+                 onclick="showExampleImage(this.src)">
+            <img src="assets/img/examples/example-3.jpg" alt="Ảnh ví dụ 3" class="example-img rounded shadow-sm"
+                 width="80" height="80" style="object-fit:cover;cursor:pointer;"
+                 onclick="showExampleImage(this.src)">
+            <img src="assets/img/examples/example-4.jpg" alt="Ảnh ví dụ 4" class="example-img rounded shadow-sm"
+                 width="80" height="80" style="object-fit:cover;cursor:pointer;"
+                 onclick="showExampleImage(this.src)">
+          </div>
+        </div>
+
       </div>
-    </div>
-  </div>
-</section>
-
-
-
-   
-
+    </section>
   </main>
 
+  <!-- Footer -->
   <footer>
         <div class="container">
             <div class="footer-content">
@@ -198,17 +222,159 @@
     </footer>
 
   <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+  </a>
 
-  <!-- Vendor JS Files -->
+  <!-- Vendor JS -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
 
-  <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
+  <!-- Main JS -->
+<script>
+  
+const fileInput = document.getElementById("fileInput");
+const dropzone = document.querySelector(".pr-dropzone");
+const dropContent = document.getElementById("dropContent");
+const mainPreview = document.getElementById("mainPreview");
+const thumbnailSection = document.querySelector(".text-center.mt-4 > #thumbnailContainer").parentElement;
+const thumbnailContainer = document.getElementById("thumbnailContainer");
+const btnUpload = document.getElementById("btnUpload");
+
+let uploadedImages = [];
+
+// Ẩn thumbnail ban đầu
+thumbnailSection.style.display = "none";
+
+// --- Nút chọn file ---
+btnUpload.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+
+// --- Kéo thả ảnh ---
+dropzone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropzone.style.borderColor = "#0d6efd";
+});
+dropzone.addEventListener("dragleave", () => {
+  dropzone.style.borderColor = "#d0d7de";
+});
+dropzone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropzone.style.borderColor = "#d0d7de";
+  handleFiles(e.dataTransfer.files);
+});
+
+// --- Xử lý file ảnh ---
+function handleFiles(files) {
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) continue;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const src = event.target.result;
+      uploadedImages.push(src);
+      updateThumbnails();
+      showImage(src);
+      toggleThumbnailSection();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// --- Hiển thị ảnh chính ---
+function showImage(src) {
+  mainPreview.src = src;
+  mainPreview.style.display = "block";
+  mainPreview.style.maxWidth = "100%";
+  mainPreview.style.height = "auto";
+  mainPreview.style.maxHeight = "70vh"; // ✅ Giới hạn chiều cao hợp lý
+  dropContent.style.display = "none";
+
+  // ✅ Cho phép dropzone tự co giãn
+  dropzone.style.height = "auto";
+  dropzone.style.minHeight = "300px";
+  dropzone.classList.add("has-image");
+}
+
+// --- Cập nhật danh sách thumbnail ---
+function updateThumbnails() {
+  thumbnailContainer.innerHTML = `
+    <div class="thumb-add d-flex align-items-center justify-content-center border rounded-3"
+         style="width:70px;height:70px;cursor:pointer;background:#f8f9fa;"
+         onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-plus-lg fs-3 text-secondary"></i>
+    </div>`;
+
+  uploadedImages.forEach((src, index) => {
+    const div = document.createElement("div");
+    div.className = "position-relative";
+    div.style.width = "70px";
+    div.style.height = "70px";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.className = "rounded-3";
+    img.style.width = "70px";
+    img.style.height = "70px";
+    img.style.objectFit = "cover";
+    img.style.cursor = "pointer";
+    img.onclick = () => showImage(src);
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn btn-sm btn-light position-absolute top-0 end-0 m-1";
+    delBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+    delBtn.style.borderRadius = "50%";
+
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      uploadedImages.splice(index, 1);
+      updateThumbnails();
+      toggleThumbnailSection();
+
+      if (uploadedImages.length === 0) {
+        resetToInitial();
+      } else if (mainPreview.src === src) {
+        showImage(uploadedImages[0]);
+      }
+    };
+
+    div.appendChild(img);
+    div.appendChild(delBtn);
+    thumbnailContainer.appendChild(div);
+  });
+}
+
+// --- Ẩn/hiện khu vực thumbnail ---
+function toggleThumbnailSection() {
+  thumbnailSection.style.display = uploadedImages.length > 0 ? "block" : "none";
+}
+
+// --- Reset về trạng thái ban đầu ---
+function resetToInitial() {
+  mainPreview.src = "";
+  mainPreview.style.display = "none";
+  dropContent.style.display = "block";
+  fileInput.value = ""; // reset input file
+  dropzone.classList.remove("has-image");
+  dropzone.style.height = "auto";
+  thumbnailContainer.innerHTML = `
+    <div class="thumb-add d-flex align-items-center justify-content-center border rounded-3"
+         style="width:70px;height:70px;cursor:pointer;background:#f8f9fa;"
+         onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-plus-lg fs-3 text-secondary"></i>
+    </div>`;
+}
+
+// --- Ảnh ví dụ ---
+function showExampleImage(src) {
+  showImage(src);
+  uploadedImages = [src, ...uploadedImages];
+  updateThumbnails();
+  toggleThumbnailSection();
+}
+</script>
+
 
 </body>
-
 </html>

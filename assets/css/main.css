@@ -3490,7 +3490,27 @@ section,
   min-height:180px;
   display:flex; align-items:center; justify-content:center; flex-direction:column;
 }
+.preview-container img {
+  background-color: #fff; /* nền trắng */
+  mix-blend-mode: normal; /* bỏ hòa trộn trong suốt */
+  opacity: 1; /* đảm bảo không bị mờ */
+  filter: none; /* loại bỏ hiệu ứng filter */
+}
+.image-preview {
+  background-color: #fff !important; /* bắt buộc nền trắng */
+  background-image: none !important; /* loại bỏ lớp nền checkered */
+}
 
+.preview-container img {
+  background-color: #fff; /* nền trắng */
+  mix-blend-mode: normal; /* bỏ hòa trộn trong suốt */
+  opacity: 1; /* đảm bảo không bị mờ */
+  filter: none; /* loại bỏ hiệu ứng filter */
+}
+.image-preview {
+  background-color: #fff !important; /* bắt buộc nền trắng */
+  background-image: none !important; /* loại bỏ lớp nền checkered */
+}
 /* Nút tím */
 .pr-cta{
   --pr-purple: #5b21ff;
@@ -3599,7 +3619,35 @@ section,
   border-radius: 12px;
   box-shadow: 0 14px 36px rgba(17,24,39,.16), 0 3px 8px rgba(17,24,39,.08);
 }
+/* Khi có ảnh, ẩn nền caro checkerboard */
+.pr-dropzone.has-image::before {
+  display: none !important;
+}
+/* Đảm bảo ảnh luôn nằm trên nền trắng, không bị hòa trộn */
+.pr-drop-inner img {
+  background-color: #fff;
+  mix-blend-mode: normal;
+  z-index: 2;
+  position: relative;
+}
+.pr-dropzone {
+  transition: all 0.3s ease;
+  min-height: 300px;
+  overflow: hidden;
+  position: relative;
+}
 
+.pr-dropzone.has-image {
+  background: #fff;
+}
+
+#mainPreview {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  max-height: 70vh;
+  object-fit: contain;
+}
 /* khi kéo–thả: viền dashed + bóng tím nhẹ */
 .pr-dropzone.dragging{
   outline: 2px dashed #6a35ff;
@@ -3608,7 +3656,36 @@ section,
     0 40px 110px rgba(90,33,255,.18),
     0 14px 28px rgba(90,33,255,.10);
 }
+/* Khi có ảnh, ẩn nền caro checkerboard */
+.pr-dropzone.has-image::before {
+  display: none !important;
+}
 
+/* Đảm bảo ảnh luôn nằm trên nền trắng, không bị hòa trộn */
+.pr-drop-inner img {
+  background-color: #fff;
+  mix-blend-mode: normal;
+  z-index: 2;
+  position: relative;
+}
+.pr-dropzone {
+  transition: all 0.3s ease;
+  min-height: 300px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pr-dropzone.has-image {
+  background: #fff;
+}
+
+#mainPreview {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  max-height: 70vh;
+  object-fit: contain;
+}
 /* Mobile: giữ tỉ lệ đẹp */
 @media (max-width: 768px){
   .pr-dropzone{
