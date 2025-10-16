@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="REMOVE BG" width="420">
+  <img src="static/assets/logo.png" alt="REMOVE BG" width="420">
 </p>
 
 <p align="center">

@@ -368,4 +368,3 @@ function initHeroDropzone() {
 // Khởi tạo sau khi DOM sẵn sàng
 window.addEventListener('load', initHeroDropzone);
 })(); // đóng IIFE
-
