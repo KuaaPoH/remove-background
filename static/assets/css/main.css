@@ -1413,3 +1413,34 @@ footer{
 /* Ảnh trong modal */
 .modal-img{ max-width: 100%; height: auto; display: block; border-radius: 12px; }
 .no-bg{ background: none !important; }
+
+  .sr-only-file{
+    position:absolute !important;
+    width:1px !important; height:1px !important;
+    padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+  /* tuỳ chọn: hiển thị “đang xử lý” khi HTMX request */
+  .htmx-indicator{ display:none; }
+  .htmx-request .htmx-indicator{ display:block; }
+
+/* Nền caro chỉ dùng cho kết quả */
+.bg-checker{
+  background: repeating-conic-gradient(#f3f4f6 0% 25%, #ffffff 0% 50%) 0 / 16px 16px;
+  /* bo nhẹ cho đẹp mắt (tuỳ chọn) */
+  border-radius: 12px;
+}
+
+/* Khung linh hoạt theo ảnh thật, không ép tỉ lệ */
+.rb-fit{
+  display: inline-block;         /* gom theo kích thước ảnh */
+  padding: 8px;                  /* tạo khoảng thở quanh ảnh, tuỳ chọn */
+}
+
+/* Ảnh co giãn đúng tỉ lệ, không vượt quá chiều cao modal */
+.rb-img{
+  height: auto;
+  max-width: 100%;
+  max-height: 70vh;              /* để ảnh không cao quá viewport */
+  display: block;
+}
