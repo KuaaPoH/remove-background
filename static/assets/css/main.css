@@ -1444,3 +1444,13 @@ footer{
   max-height: 70vh;              /* để ảnh không cao quá viewport */
   display: block;
 }
+.example-img{
+  width: 96px; height: 96px;
+  object-fit: cover; cursor: pointer;
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.example-img:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(17,24,39,.15);
+}
+.pr-dropzone .form-select.form-select-sm { min-width: 160px; }
