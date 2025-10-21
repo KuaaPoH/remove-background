@@ -1,261 +1,240 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Trình xóa nền - Landio Template</title>
-
-  <!-- Favicons -->
-  <link href="{{ url_for('static', filename='assets/img/favicon.png') }}" rel="icon">
-  <link href="{{ url_for('static', filename='assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>Trình xóa nền</title>
 
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS -->
+  <!-- Bootstrap & Icons -->
   <link href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/vendor/aos/aos.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
 
-  <!-- Main CSS -->
+  <!-- App CSS -->
   <link href="{{ url_for('static', filename='assets/css/main.css') }}" rel="stylesheet">
 </head>
-
 <body class="index-page">
-  <!-- Main -->
-  <main class="main mt-5 pt-5">
-    <section id="hero" class="hero section hero-pr-style">
-      <div class="container">
 
-        <!-- Tiêu đề -->
-        <div class="text-center mb-4">
-          <h1 class="hero-title">Trình xóa nền</h1>
-          <p class="hero-description text-muted">Xóa hình nền miễn phí, nhanh chóng và dễ sử dụng.</p>
-        </div>
+<main class="main mt-5 pt-5">
+  <section id="hero" class="section">
+    <div class="container">
+
+      <!-- Title -->
+      <div class="text-center mb-4">
+        <h1 class="fw-bold mb-1">Trình xóa nền</h1>
+        <p class="text-muted">Xóa hình nền miễn phí, nhanh chóng và dễ sử dụng.</p>
+      </div>
+
+      <!-- Decor + Dropzone -->
+      <div class="position-relative">
+        <!-- 2 ảnh decor -->
+        <img src="{{ url_for('static', filename='assets/img/about/about-3.webp') }}"
+             class="pr-decor-left d-none d-md-block" alt="">
+        <img src="{{ url_for('static', filename='assets/img/about/about-7.webp') }}"
+             class="pr-decor-right d-none d-md-block" alt="">
 
         <!-- Dropzone -->
-        <div class="position-relative">
-          <img src="{{ url_for('static', filename='assets/img/about/about-3.webp') }}" class="pr-decor-left d-none d-md-block" alt="">
-          <img src="{{ url_for('static', filename='assets/img/about/about-7.webp') }}" class="pr-decor-right d-none d-md-block" alt="">
+        <div class="pr-dropzone mx-auto border rounded-4 p-5 text-center"
+             style="background:rgba(255,255,255,0.85); max-width:720px;">
+          <div class="pr-drop-inner text-center">
+            <form
+              id="uploadForm"
+              hx-post="/remove-bg-frag"
+              hx-target="#modalCompareBody"
+              hx-swap="innerHTML"
+              hx-encoding="multipart/form-data"
+              hx-trigger="change from:#fileInput, submit"
+              hx-include="#engineGroup"
+              hx-on="
+                htmx:beforeRequest:
+                  (function(){
+                    var body = document.getElementById('modalCompareBody');
+                    body.innerHTML =
+                      '<div class=\'text-center py-5\'>'
+                        +'<div class=\'spinner-border\' role=\'status\'></div>'
+                        +'<div class=\'mt-2 text-muted small\'>Đang xử lý…</div>'
+                      +'</div>';
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('compareModal')).show();
+                  })()
+              ">
+              <label for="fileInput" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>Bắt đầu từ một ảnh
+              </label>
+              <div class="pr-drop-hint mt-3 fw-medium">Hoặc thả hình ảnh tại đây</div>
 
-          <div class="pr-dropzone mx-auto border rounded-4 p-5 text-center" style="background:rgba(255,255,255,0.8); max-width:600px;">
-            <div class="pr-drop-inner text-center">
-              <!-- Form HTMX: chọn file -> POST -> server trả fragment -> đổ vào modal -->
-              <form
-  hx-post="/remove-bg-frag"
-  hx-target="#modalCompareBody"
-  hx-swap="innerHTML"
-  hx-indicator="#dzIndicator"
-  hx-encoding="multipart/form-data"
-  hx-trigger="change from:#fileInput"
-  class="text-center">
-
-
-  <label for="fileInput" class="btn btn-primary">
-    <i class="bi bi-plus-lg me-2"></i> Bắt đầu từ một ảnh
-  </label>
-  <div class="pr-drop-hint mt-3">Hoặc thả hình ảnh tại đây</div>
-
-  <input id="fileInput" name="image" type="file" accept="image/*" class="visually-hidden">
-<div class="mt-3 d-inline-flex align-items-center gap-2">
-    <label for="engineSelect" class="text-muted small m-0">Engine:</label>
-    <select id="engineSelect" name="engine" class="form-select form-select-sm" style="width:auto;">
-      <option value="rembg" selected>rembg (AI)</option>
-      <option value="grabcut">GrabCut (OpenCV)</option>
-    </select>
-  </div>
-</form>
-
-            </div>
-
-            <!-- Indicator khi đang xử lý -->
-            <div id="dzIndicator" class="htmx-indicator" style="display:none">Đang xử lý…</div>
+              <!-- phải có name="image" -->
+              <input id="fileInput" name="image" type="file" accept="image/*" class="visually-hidden">
+            </form>
           </div>
         </div>
-
       </div>
+
+      <!-- ENGINE TOGGLE -->
+      <div id="engineGroup" class="engine-toggle my-4 d-flex justify-content-center gap-4" role="radiogroup" aria-label="Chọn engine">
+        <label class="engine-option rembg">
+          <input type="radio" name="engine" value="rembg" checked>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="txt">AI</span>
+        </label>
+
+        <label class="engine-option grabcut">
+          <input type="radio" name="engine" value="grabcut">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="txt">GrabCut</span>
+        </label>
+      </div>
+
       <!-- Ảnh ví dụ -->
-<div class="text-center mt-4">
-  <p class="mb-2 fw-medium">
-    Bạn chưa có hình ảnh? <span class="text-muted">Hãy thử một hình dưới đây</span>
-  </p>
+      <div class="text-center">
+        <p class="mb-2 fw-medium">
+          Bạn chưa có hình ảnh? <span class="text-muted">Hãy thử một hình dưới đây</span>
+        </p>
 
-  <div class="d-flex justify-content-center gap-3 flex-wrap">
-    <!-- Ví dụ 1 -->
-    <img
-      src="{{ url_for('static', filename='assets/img/examples/example-1.jpg') }}"
-      alt="Ảnh ví dụ 1"
-      class="example-img rounded shadow-sm"
-      hx-post="/remove-bg-example?engine=rembg"
-      hx-vals='{"path":"assets/img/examples/example-1.jpg"}'
-      hx-include="#engineSelect" 
-      hx-target="#modalCompareBody"
-      hx-swap="innerHTML"
-      hx-indicator="#dzIndicator">
-    <!-- Ví dụ 2 -->
-    <img
-      src="{{ url_for('static', filename='assets/img/examples/example-2.jpg') }}"
-      alt="Ảnh ví dụ 2"
-      class="example-img rounded shadow-sm"
-      hx-post="/remove-bg-example?engine=rembg"
-      hx-vals='{"path":"assets/img/examples/example-2.jpg"}'
-      hx-include="#engineSelect" 
-      hx-target="#modalCompareBody"
-      hx-swap="innerHTML"
-      hx-indicator="#dzIndicator">
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          {% set ex = 'assets/img/examples/' %}
+          {% for f in ['example-1.jpg','example-2.jpg','example-3.jpg','example-4.jpg'] %}
+          <img
+            src="{{ url_for('static', filename=ex + f) }}"
+            alt="Ảnh ví dụ"
+            class="example-img rounded shadow-sm"
+            hx-post="/remove-bg-example"
+            hx-vals='{"path":"{{ ex + f }}"}'
+            hx-include="#engineGroup"
+            hx-target="#modalCompareBody"
+            hx-swap="innerHTML"
+            hx-on="
+              htmx:beforeRequest:
+                (function(){
+                  var body = document.getElementById('modalCompareBody');
+                  body.innerHTML =
+                    '<div class=\'text-center py-5\'>'
+                      +'<div class=\'spinner-border\' role=\'status\'></div>'
+                      +'<div class=\'mt-2 text-muted small\'>Đang xử lý…</div>'
+                    +'</div>';
+                  bootstrap.Modal.getOrCreateInstance(document.getElementById('compareModal')).show();
+                })()
+            ">
+          {% endfor %}
+        </div>
+      </div>
 
-    <!-- Ví dụ 3 -->
-    <img
-      src="{{ url_for('static', filename='assets/img/examples/example-3.jpg') }}"
-      alt="Ảnh ví dụ 3"
-      class="example-img rounded shadow-sm"
-      hx-post="/remove-bg-example?engine=rembg"
-      hx-vals='{"path":"assets/img/examples/example-3.jpg"}'
-      hx-include="#engineSelect" 
-      hx-target="#modalCompareBody"
-      hx-swap="innerHTML"
-      hx-indicator="#dzIndicator">
+    </div>
+  </section>
+</main>
 
-    <!-- Ví dụ 4 -->
-    <img
-      src="{{ url_for('static', filename='assets/img/examples/example-4.jpg') }}"
-      alt="Ảnh ví dụ 4"
-      class="example-img rounded shadow-sm"
-      hx-post="/remove-bg-example?engine=rembg"
-      hx-vals='{"path":"assets/img/examples/example-4.jpg"}'
-      hx-include="#engineSelect" 
-      hx-target="#modalCompareBody"
-      hx-swap="innerHTML"
-      hx-indicator="#dzIndicator">
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>RemoveBG</h3>
+        <p>Ứng dụng chỉnh sửa ảnh AI hàng đầu giúp bạn tạo ra những hình ảnh chuyên nghiệp trong vài giây.</p>
+      </div>
+
+      <div class="footer-column">
+        <h3>Sản phẩm</h3>
+        <ul>
+          <li><a href="#">Xóa nền</a></li>
+          <li><a href="#">Tạo nền</a></li>
+          <li><a href="#">Chỉnh sửa ảnh</a></li>
+          <li><a href="#">Mẫu thiết kế</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Tài nguyên</h3>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Hướng dẫn</a></li>
+          <li><a href="#">Câu hỏi thường gặp</a></li>
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Tài liệu API</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Người thực hiện</h3>
+        <ul>
+          <li><a href="#">Trần Ngọc Hải</a></li>
+          <li><a href="#">Hà Văn Hiệp</a></li>
+          <li><a href="#">Nguyễn Sỹ Dương</a></li>
+          <li><a href="#">Nguyễn Văn Tùng Dương</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Pháp lý</h3>
+        <ul>
+          <li><a href="#">Điều khoản dịch vụ</a></li>
+          <li><a href="#">Chính sách bảo mật</a></li>
+          <li><a href="#">Chính sách cookie</a></li>
+          <li><a href="#">Cài đặt cookie</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-bottom-links">
+        <a href="#">Tiếng Việt</a>
+        <a href="#">English</a>
+      </div>
+      <div class="copyright">
+        &copy; 2025 REMOVEBG. Thị Giác Máy Tính Nhóm 11.
+      </div>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/V0LEURS" class="social-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+          </svg>
+        </a>
+        <a href="https://discord.gg/6Nk3MVWhwk" class="social-icon discord">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M13.55,3.15A13.34,13.34,0,0,0,10.74,2.5a9.83,9.83,0,0,0-.43,1,12.3,12.3,0,0,0-3.66,0A9.83,9.83,0,0,0,5.22,2.5,13.34,13.34,0,0,0,2.41,3.15,14,14,0,0,0,.16,11.35a13.38,13.38,0,0,0,4.08,2,9.78,9.78,0,0,0,.85-1.4,8.62,8.62,0,0,1-1.35-.65,6.57,6.57,0,0,0,.11-.09l.21-.15a9.8,9.8,0,0,0,8.41,0l.21.15.11.09a8.62,8.62,0,0,1-1.35.65,9.78,9.78,0,0,0,.85,1.4,13.38,13.38,0,0,0,4.08-2A14,14,0,0,0,13.55,3.15ZM5.33,9.18A1.55,1.55,0,0,1,3.78,7.63,1.55,1.55,0,0,1,5.33,6.08,1.55,1.55,0,0,1,6.88,7.63,1.55,1.55,0,0,1,5.33,9.18Zm5.34,0A1.55,1.55,0,0,1,9.12,7.63,1.55,1.55,0,0,1,10.67,6.08a1.55,1.55,0,0,1,1.55,1.55A1.55,1.55,0,0,1,10.67,9.18Z"/>
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/kenn20newlife/" class="social-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633z"/>
+          </svg>
+        </a>
+        <a href="https://github.com/KuaaPoH/remove-background" class="social-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal so sánh -->
+<div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center gap-2">
+          So sánh ảnh
+          <span id="engineBadge" class="badge bg-secondary d-none"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <div id="modalCompareBody" class="container-fluid"
+             hx-on="htmx:afterSwap: (function(){ 
+               var badge=document.querySelector('#modalCompareBody .badge'); 
+               var tb=document.getElementById('engineBadge'); 
+               if(badge&&tb){ tb.className=badge.className; tb.textContent=badge.textContent; tb.classList.remove('d-none'); }
+             })()">
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-    </section>
-    
-  </main>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-column">
-          <h3>PhotoRoom</h3>
-          <p>Ứng dụng chỉnh sửa ảnh AI hàng đầu giúp bạn tạo ra những hình ảnh chuyên nghiệp trong vài giây.</p>
-        </div>
-
-        <div class="footer-column">
-          <h3>Sản phẩm</h3>
-          <ul>
-            <li><a href="#">Xóa nền</a></li>
-            <li><a href="#">Tạo nền</a></li>
-            <li><a href="#">Chỉnh sửa ảnh</a></li>
-            <li><a href="#">Mẫu thiết kế</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Tài nguyên</h3>
-          <ul>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Hướng dẫn</a></li>
-            <li><a href="#">Câu hỏi thường gặp</a></li>
-            <li><a href="#">Trung tâm trợ giúp</a></li>
-            <li><a href="#">Tài liệu API</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Người thực hiện</h3>
-          <ul>
-            <li><a href="#">Trần Ngọc Hải </a></li>
-            <li><a href="#">Hà Văn Hiệp</a></li>
-            <li><a href="#">Nguyễn Sỹ Dương</a></li>
-            <li><a href="#">Nguyễn Văn Tùng Dương</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Pháp lý</h3>
-          <ul>
-            <li><a href="#">Điều khoản dịch vụ</a></li>
-            <li><a href="#">Chính sách bảo mật</a></li>
-            <li><a href="#">Chính sách cookie</a></li>
-            <li><a href="#">Cài đặt cookie</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div class="footer-bottom-links">
-          <a href="#">Tiếng Việt</a>
-          <a href="#">English</a>
-        </div>
-        <div class="copyright">
-          &copy; 2025 PhotoRoom. Thị Giác Máy Tính Nhóm 11.
-        </div>
-        <div class="social-icons">
-          <a href="https://www.facebook.com/V0LEURS" class="social-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
-            </svg>
-          </a>
-          <a href="https://discord.gg/6Nk3MVWhwk" class="social-icon discord">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M13.55,3.15A13.34,13.34,0,0,0,10.74,2.5a9.83,9.83,0,0,0-.43,1,12.3,12.3,0,0,0-3.66,0A9.83,9.83,0,0,0,5.22,2.5,13.34,13.34,0,0,0,2.41,3.15,14,14,0,0,0,.16,11.35a13.38,13.38,0,0,0,4.08,2,9.78,9.78,0,0,0,.85-1.4,8.62,8.62,0,0,1-1.35-.65,6.57,6.57,0,0,0,.11-.09l.21-.15a9.8,9.8,0,0,0,8.41,0l.21.15.11.09a8.62,8.62,0,0,1-1.35.65,9.78,9.78,0,0,0,.85,1.4,13.38,13.38,0,0,0,4.08-2A14,14,0,0,0,13.55,3.15ZM5.33,9.18A1.55,1.55,0,0,1,3.78,7.63,1.55,1.55,0,0,1,5.33,6.08,1.55,1.55,0,0,1,6.88,7.63,1.55,1.55,0,0,1,5.33,9.18Zm5.34,0A1.55,1.55,0,0,1,9.12,7.63,1.55,1.55,0,0,1,10.67,6.08a1.55,1.55,0,0,1,1.55,1.55A1.55,1.55,0,0,1,10.67,9.18Z"/>
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/kenn20newlife/" class="social-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633z"/>
-            </svg>
-          </a>
-          <a href="https://github.com/KuaaPoH/remove-background" class="social-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
-    <i class="bi bi-arrow-up-short"></i>
-  </a>
-
-  <!-- Vendor JS -->
-  <!-- Giữ MỘT bản Bootstrap bundle (không nạp trùng) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/php-email-form/validate.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/aos/aos.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
-
-  <!-- Main JS (đã rút gọn, không còn logic upload) -->
-  <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-
-  <!-- Modal so sánh -->
-  <div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">So sánh ảnh</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Kết quả server trả sẽ được HTMX nhét vào đây; sau khi swap sẽ tự .show() -->
-          <div id="modalCompareBody" class="container-fluid"
-               hx-on="htmx:afterSwap: bootstrap.Modal.getOrCreateInstance(document.getElementById('compareModal')).show()">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </body>
 </html>

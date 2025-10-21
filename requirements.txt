@@ -1,0 +1,24 @@
+# === requirements.txt for Remove BG app ===
+# CPU-only default. Works on Windows/macOS/Linux.
+
+Flask>=2.3,<4.0
+# For HTMX you don't need a Python package (it's loaded from CDN in index.html)
+
+# --- Image processing ---
+opencv-python-headless>=4.8,<5.0
+numpy==1.26.4
+Pillow>=9.5,<11.0
+
+# --- AI background removal (rembg) ---
+# rembg uses onnxruntime. If you don't want AI and only use GrabCut,
+# you can comment out the two lines below.
+rembg>=2.0.50,<3.0
+onnxruntime>=1.16,<2.0
+
+# --- Optional: if you have a CUDA GPU and want faster inference, comment the
+# onnxruntime line above and UNcomment the next one instead ---
+# onnxruntime-gpu>=1.16,<2.0
+
+# --- Optional utilities (dev/prod) ---
+# python-dotenv>=1.0
+# gunicorn>=21.2   # for Linux production (not for Windows)
