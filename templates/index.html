@@ -5,14 +5,14 @@
   <meta content="width=device-width, initial-scale=1" name="viewport" />
   <title>Trình xóa nền</title>
 
-  <!-- HTMX -->
+ 
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
-  <!-- Bootstrap & Icons -->
+
   <link href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
 
-  <!-- App CSS -->
+
   <link href="{{ url_for('static', filename='assets/css/main.css') }}" rel="stylesheet">
 </head>
 <body class="index-page">
@@ -21,21 +21,21 @@
   <section id="hero" class="section">
     <div class="container">
 
-      <!-- Title -->
+   
       <div class="text-center mb-4">
         <h1 class="fw-bold mb-1">Trình xóa nền</h1>
         <p class="text-muted">Xóa hình nền miễn phí, nhanh chóng và dễ sử dụng.</p>
       </div>
 
-      <!-- Decor + Dropzone -->
+     
       <div class="position-relative">
-        <!-- 2 ảnh decor -->
+     
         <img src="{{ url_for('static', filename='assets/img/about/about-3.webp') }}"
              class="pr-decor-left d-none d-md-block" alt="">
         <img src="{{ url_for('static', filename='assets/img/about/about-7.webp') }}"
              class="pr-decor-right d-none d-md-block" alt="">
 
-        <!-- Dropzone -->
+       
         <div class="pr-dropzone mx-auto border rounded-4 p-5 text-center"
              style="background:rgba(255,255,255,0.85); max-width:720px;">
           <div class="pr-drop-inner text-center">
@@ -64,14 +64,14 @@
               </label>
               <div class="pr-drop-hint mt-3 fw-medium">Hoặc thả hình ảnh tại đây</div>
 
-              <!-- phải có name="image" -->
+              
               <input id="fileInput" name="image" type="file" accept="image/*" class="visually-hidden">
             </form>
           </div>
         </div>
       </div>
 
-      <!-- ENGINE TOGGLE -->
+
       <div id="engineGroup" class="engine-toggle my-4 d-flex justify-content-center gap-4" role="radiogroup" aria-label="Chọn engine">
         <label class="engine-option rembg">
           <input type="radio" name="engine" value="rembg" checked>
@@ -86,7 +86,7 @@
         </label>
       </div>
 
-      <!-- Ảnh ví dụ -->
+      
       <div class="text-center">
         <p class="mb-2 fw-medium">
           Bạn chưa có hình ảnh? <span class="text-muted">Hãy thử một hình dưới đây</span>
@@ -124,7 +124,7 @@
   </section>
 </main>
 
-<!-- Footer -->
+
 <footer>
   <div class="container">
     <div class="footer-content">
@@ -209,7 +209,7 @@
   </div>
 </footer>
 
-<!-- Modal so sánh -->
+
 <div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
@@ -233,7 +233,7 @@
   </div>
 </div>
 
-<!-- Bootstrap JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
