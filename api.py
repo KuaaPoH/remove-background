@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from flask import Blueprint, request, send_file, abort, render_template_string, current_app
 import io, base64, os, logging, traceback
 import numpy as np
@@ -9,27 +9,20 @@ from processors import remove_bg_grabcut, remove_bg_rembg
 api_bp = Blueprint("api", __name__)
 log = logging.getLogger(__name__)
 
-# ----------------------------
-# Helpers
-# ----------------------------
+
 def _decode_bgr(img_bytes: bytes):
-    """Decode bytes -> BGR(A) bằng OpenCV. Raise 400 nếu lỗi."""
+    
     arr = np.frombuffer(img_bytes, np.uint8)
     bgr = cv2.imdecode(arr, cv2.IMREAD_UNCHANGED)
     if bgr is None:
-        abort(400, "Khong doc duoc anh")  # tránh unicode nếu bạn lưu ANSI
+        abort(400, "Khong doc duoc anh")  
     return bgr
 
 def _process_image(img_bytes: bytes, engine: str):
-    """
-    Xoa nen theo engine: 'rembg' (mac dinh) hoac 'grabcut'.
-    Co fallback sang grabcut neu AI loi.
-
-    Tra ve: (out_bytes, used_engine, (w0,h0), (w1,h1), fallback)
-    """
+    
     engine = (engine or "rembg").lower()
 
-    # Kich thuoc anh goc
+    
     bgr0 = _decode_bgr(img_bytes)
     h0, w0 = bgr0.shape[:2]
 
@@ -40,15 +33,15 @@ def _process_image(img_bytes: bytes, engine: str):
         if engine == "grabcut":
             out_bytes = remove_bg_grabcut(bgr0)
         else:
-            out_bytes = remove_bg_rembg(img_bytes)  # rembg dung bytes
+            out_bytes = remove_bg_rembg(img_bytes)  
     except Exception as e:
-        # Ghi log & fallback
+       
         log.error("Engine '%s' failed: %s\n%s", engine, e, traceback.format_exc())
         out_bytes = remove_bg_grabcut(bgr0)
         used_engine = f"{engine} -> grabcut"
         fallback = True
 
-    # Kich thuoc anh ket qua (phong khi khac)
+   
     try:
         bgr1 = _decode_bgr(out_bytes)
         h1, w1 = bgr1.shape[:2]
@@ -61,9 +54,7 @@ def _badge_class(used_engine: str, fallback: bool) -> str:
     return "badge bg-warning text-dark" if fallback or "->" in used_engine else "badge bg-secondary"
 
 
-# ===============================================
-# 1) Tra file PNG: POST /remove-bg
-# ===============================================
+
 @api_bp.post("/remove-bg")
 def remove_bg():
     if "image" not in request.files:
@@ -78,9 +69,7 @@ def remove_bg():
     return resp
 
 
-# =========================================================
-# 2) Tra HTML fragment (HTMX): POST /remove-bg-frag
-# =========================================================
+
 @api_bp.post("/remove-bg-frag")
 def remove_bg_frag():
     if "image" not in request.files:
@@ -96,7 +85,7 @@ def remove_bg_frag():
 
     html = '''
 <div class="row g-4 align-items-start">
-  <!-- Anh goc -->
+
   <div class="col-lg-6">
     <h6 class="mb-2 text-muted">Ảnh gốc <span class="small text-secondary">({{ w0 }}×{{ h0 }})</span></h6>
     <div class="rb-box">
@@ -104,7 +93,6 @@ def remove_bg_frag():
     </div>
   </div>
 
-  <!-- Anh da tach nen -->
   <div class="col-lg-6">
     <div class="d-flex align-items-center justify-content-between mb-2">
       <h6 class="m-0 text-muted">Ảnh đã tách nền <span class="small text-secondary">({{ w1 }}×{{ h1 }})</span></h6>
@@ -127,9 +115,7 @@ def remove_bg_frag():
     )
 
 
-# =========================================================
-# 3) Anh vi du (HTMX): POST /remove-bg-example
-# =========================================================
+
 @api_bp.post("/remove-bg-example")
 def remove_bg_example():
     rel_path = (request.form.get("path") or "").strip()
@@ -181,7 +167,7 @@ def remove_bg_example():
         w0=w0, h0=h0, w1=w1, h1=h1,
         used_engine=used_engine, badge_cls=badge_cls
     )
-# Thêm vào cuối api.py
+
 
 @api_bp.errorhandler(400)
 def _h400(e):
